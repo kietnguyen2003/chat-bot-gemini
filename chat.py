@@ -11,6 +11,41 @@ Cite up to 3 "Article URL:" lines per reply.
 """
 
 
+def stream_answer(client, model, store_name, question):
+    stream = client.interactions.create(
+        model=model,
+        input=f"""{SYSTEM_PROMPT}
+
+User question:
+{question}
+""",
+        stream=True,
+        tools=[
+            {
+                "type": "file_search",
+                "file_search_store_names": [store_name],
+            }
+        ],
+    )
+
+    print("\nOptiBot:")
+    full_answer = ""
+
+    for event in stream:
+        if event.event_type == "step.delta":
+            if event.delta.type == "text":
+                text = event.delta.text
+                print(text, end="", flush=True)
+                full_answer += text
+
+        elif event.event_type == "error":
+            print("\nStream error:")
+            print(event.error)
+
+    print()
+    return full_answer
+
+
 def main():
     load_dotenv()
 
@@ -29,6 +64,7 @@ def main():
     client = genai.Client(api_key=api_key)
 
     print("OptiBot Console Chat")
+    print("Streaming mode: ON")
     print("Type 'exit' to quit.")
     print("-" * 50)
 
@@ -44,23 +80,12 @@ def main():
             break
 
         try:
-            interaction = client.interactions.create(
+            stream_answer(
+                client=client,
                 model=model,
-                input=f"""{SYSTEM_PROMPT}
-
-User question:
-{question}
-""",
-                tools=[
-                    {
-                        "type": "file_search",
-                        "file_search_store_names": [store_name],
-                    }
-                ],
+                store_name=store_name,
+                question=question,
             )
-
-            print("\nOptiBot:")
-            print(interaction.output_text)
 
         except Exception as error:
             print("\nError:")
