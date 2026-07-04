@@ -99,7 +99,7 @@ def fetch_articles():
         url = data.get("next_page")
     print("number of articles: ", len(articles))
 
-    return articles[:100]
+    return articles[:103]
 
 
 def clean_html(html):
