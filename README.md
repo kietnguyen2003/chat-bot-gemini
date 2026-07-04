@@ -118,10 +118,6 @@ Expected behavior:
 - The answer is concise and factual
 - The answer includes up to 3 `Article URL:` citation lines
 
-## Submission notes
+Example console result:
 
-- Repository name intentionally does not include `optisigns`
-- API keys are loaded from environment variables
-- Files are uploaded through API, not drag-and-drop UI
-- Docker job runs once and exits successfully
-- Daily job logs include `added`, `updated`, and `skipped`
+![OptiBot sample answer](screenshot/image.png)
