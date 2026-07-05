@@ -78,15 +78,25 @@ The mounted `output/` folder keeps article Markdown files, state, and last run l
 
 ## Daily job deployment
 
-The job can be scheduled on a DigitalOcean Droplet using cron.
+The job can be scheduled on a DigitalOcean Droplet using cron. In my deployment, cron calls a small wrapper script at `/opt/optibot/run_daily.sh`, and that script runs the Docker job while appending logs to `output/cron.log`.
 
 Example cron command:
 
 ```cron
-0 2 * * * /usr/bin/docker run --rm --name optibot-daily-job --env-file /opt/optibot/.env -v /opt/optibot/output:/app/output optibot-job >> /opt/optibot/output/cron.log 2>&1
+0 2 * * * /opt/optibot/run_daily.sh >> /opt/optibot/output/cron.log 2>&1
 ```
 
 This runs once per day at 2:00 AM server time.
+
+Cron entry on the server:
+
+![Cron schedule screenshot](screenshot/cron-l.png)
+
+Example job output after a scheduled run:
+
+![Cron run result screenshot](screenshot/image%20copy.png)
+
+The `run_at` field in the log is stored in UTC format. For example, `2026-07-04T19:00:20.824770+00:00` is equivalent to `02:00:20` in Vietnam time (`UTC+07:00`) on July 5, 2026, which matches the cron schedule configured for `2:00 AM`.
 
 Last run artifact:
 
